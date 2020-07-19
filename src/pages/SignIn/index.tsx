@@ -1,11 +1,12 @@
-import React, { useCallback, useRef, useContext } from 'react';
+import React, { useCallback, useRef } from 'react';
 import { FiLogIn, FiLock, FiMail } from 'react-icons/fi';
 
 import { Form } from '@unform/web';
 import { FormHandles } from '@unform/core';
 import * as Yup from 'yup';
 
-import AuthContext from '../../context/AuthContext';
+import { useAuth } from '../../hooks/auth';
+import { useToast } from '../../hooks/toast';
 import getValidationErrors from '../../utils/getValidationsError';
 
 import logoImg from '../../assets/logo.svg';
@@ -14,6 +15,11 @@ import Input from '../../components/Input';
 import Button from '../../components/Button';
 
 import { Container, Content, Background } from './styles';
+
+interface SignInFormData {
+  email: string;
+  password: string;
+}
 
 const SignIn: React.FC = () => {
   /**
@@ -28,53 +34,86 @@ const SignIn: React.FC = () => {
    * Essa variável terá acesso a todas as propriedades e valores
    * definidos para o contexto
    */
-  const auth = useContext(AuthContext);
+  const { signIn } = useAuth();
 
-  const handleSubmit = useCallback(async (data: object) => {
-    try {
-      /**
-       * Limpa qualquer erro existente
-       */
-      formRef.current?.setErrors({});
-      /**
-       * Esquema criado para a validação dos dados do formulário,
-       * onde indicamos para o Yup que os dados estão em formato de
-       * objeto (object) o quel tem um formato definido pelo método
-       * "shape"
-       */
-      const schema = Yup.object().shape({
+  /**
+   * Importa os métodos para exibição e remoção de toasts
+   * do hook de Toast
+   */
+  const { addToast } = useToast();
+
+  const handleSubmit = useCallback(
+    async (data: SignInFormData) => {
+      try {
         /**
-         * Indica para o Yup que o campo "name" é do tipo "string" e
-         * é obrigatório (required)
+         * Limpa qualquer erro existente
          */
-        email: Yup.string()
-          .required('Informe seu e-mail')
-          .email('Informe um e-mail válido!'),
-        password: Yup.string().required('Informe sua senha'),
-      });
+        formRef.current?.setErrors({});
+        /**
+         * Esquema criado para a validação dos dados do formulário,
+         * onde indicamos para o Yup que os dados estão em formato de
+         * objeto (object) o quel tem um formato definido pelo método
+         * "shape"
+         */
+        const schema = Yup.object().shape({
+          /**
+           * Indica para o Yup que o campo "name" é do tipo "string" e
+           * é obrigatório (required)
+           */
+          email: Yup.string()
+            .required('Informe seu e-mail')
+            .email('Informe um e-mail válido!'),
+          password: Yup.string().required('Informe sua senha'),
+        });
 
-      /**
-       * Executa a validação dos dados com base nas configurações
-       * definidas para o esquema
-       * A propriedade "abortEarly" tem como padrão o valor "true"
-       * fazendo com que a validação retorne e pare no primeiro erro
-       * encontrado, alterando seu valor para "false", todos os erros
-       * serão retornados de um vez
-       */
-      await schema.validate(data, {
-        abortEarly: false,
-      });
-    } catch (err) {
-      /**
-       * Recupera e formata os error
-       */
-      const errors = getValidationErrors(err);
-      /**
-       * Define os erros para o formulário
-       */
-      formRef.current?.setErrors(errors);
-    }
-  }, []);
+        /**
+         * Executa a validação dos dados com base nas configurações
+         * definidas para o esquema
+         * A propriedade "abortEarly" tem como padrão o valor "true"
+         * fazendo com que a validação retorne e pare no primeiro erro
+         * encontrado, alterando seu valor para "false", todos os erros
+         * serão retornados de um vez
+         */
+        await schema.validate(data, {
+          abortEarly: false,
+        });
+
+        /**
+         * Executa o método que está definido dentro do contexto
+         * de autenticação
+         */
+        await signIn({
+          email: data.email,
+          password: data.password,
+        });
+      } catch (err) {
+        /**
+         * Verifica se o erro é otiginado a partir de um validação
+         * da biblioteca Yup
+         */
+        if (err instanceof Yup.ValidationError) {
+          /**
+           * Recupera e formata os error
+           */
+          const errors = getValidationErrors(err);
+          /**
+           * Define os erros para o formulário
+           */
+          formRef.current?.setErrors(errors);
+        }
+
+        /**
+         * Dispara um toast na aplicação
+         */
+        addToast({
+          type: 'error',
+          title: 'Falha na autenticação!',
+          description: 'Verifique os dados preenchidos.',
+        });
+      }
+    },
+    [signIn, addToast],
+  );
 
   return (
     <Container>
