@@ -1,5 +1,4 @@
 import React, { createContext, useCallback, useState, useContext } from 'react';
-import { date } from 'yup';
 import api from '../services/api';
 
 interface AuthState {

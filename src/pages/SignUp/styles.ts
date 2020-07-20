@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 import { shade } from 'polished';
 import signUpBackgroundImg from '../../assets/sign-up-background.png';
 
@@ -23,6 +23,36 @@ export const Content = styled.div`
   mas o tamanho total terá no máximo 700px */
   width: 100%;
   max-width: 700px;
+`;
+
+/**
+ * Cria uma animação a partir do médoto "keyFrames" da biblioteca
+ * "styled-components"
+ */
+const appearFromRight = keyframes`
+  /** Origem da animação do componente */
+  from {
+    opacity: 0;
+    transform: translateX(50px);
+  }
+  /** Destino da animação do componente */
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+`;
+
+export const AnimationContainer = styled.div`
+  display: flex;
+  /** Distribui os itens na vertical */
+  flex-direction: column;
+  /** Centraliza os itens dentro do elemento, independentemento do eixo */
+  place-content: center;
+  /** Centraliza os itens no eixo horizontal */
+  align-items: center;
+
+  /** Define a animação para o container em 1 segundo */
+  animation: ${appearFromRight} 1s;
 
   form {
     margin: 80px 0;
