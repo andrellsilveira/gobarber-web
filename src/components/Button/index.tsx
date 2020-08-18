@@ -1,16 +1,21 @@
 import React, { ButtonHTMLAttributes } from 'react';
+import { boolean } from 'yup';
 import { Container } from './styles';
 
 /**
  * Interfaces que não possuem atributos são convertidas em "types"
+ * Nesse caso estão sendo importados todos os atributos do botão padrão do HTML e também
+ * está sendo definido o atributo "loading"
  */
-type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement>;
+type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
+  loading?: boolean;
+};
 
 /**
  * children: São os valores definidos dentro das tags de um elemento
  * rest: São os atributos de um elemento
  */
-const Button: React.FC<ButtonProps> = ({ children, ...rest }) => (
+const Button: React.FC<ButtonProps> = ({ children, loading, ...rest }) => (
   <Container
     {
       /**
@@ -19,7 +24,7 @@ const Button: React.FC<ButtonProps> = ({ children, ...rest }) => (
        */ ...rest
     }
   >
-    {children}
+    {loading ? 'Carregando...' : children}
   </Container>
 );
 

@@ -6,7 +6,7 @@ interface ContainerProps {
    * O símbolo "?" identifica que a propriedade é opcional
    */
   type?: 'success' | 'error' | 'info';
-  hasDescription: boolean;
+  hasDescription: number;
 }
 
 /**

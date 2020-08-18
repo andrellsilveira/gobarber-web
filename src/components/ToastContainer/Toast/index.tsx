@@ -52,7 +52,12 @@ const Toast: React.FC<ToastProps> = ({ message, style }) => {
   return (
     <Container
       type={message.type}
-      hasDescription={!!message.description}
+      /**
+       * Não deve ser passado para um elemento HTML uma propriedade com valor booleano,
+       * caso o valor da propriedade necessite ser verdadeiro ou falso ele deverá ser
+       * convertido para um número
+       */
+      hasDescription={Number(!!message.description)}
       style={style}
     >
       {icons[message.type || 'info']}
