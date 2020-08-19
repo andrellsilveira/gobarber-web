@@ -41,10 +41,6 @@ const Profile: React.FC = () => {
 
   const { user, updateUser } = useAuth();
 
-  const userAvatar = user.avatarURL
-    ? user.avatarURL.replace('localhost', '192.168.0.192')
-    : '';
-
   const handleSubmit = useCallback(
     async (data: ProfileFormData) => {
       try {
@@ -165,7 +161,7 @@ const Profile: React.FC = () => {
         });
       }
     },
-    [history, addToast],
+    [history, addToast, updateUser],
   );
 
   const handleAvatarChange = useCallback(
@@ -230,7 +226,7 @@ const Profile: React.FC = () => {
           onSubmit={handleSubmit}
         >
           <AvatarInput>
-            <img src={userAvatar} alt={user.name} />
+            <img src={user.avatarURL} alt={user.name} />
             <label htmlFor="avatar">
               <FiCamera />
               <input

@@ -38,7 +38,6 @@ interface Appointment {
   user: {
     name: string;
     avatarURL: string;
-    formattedAvatar: string;
   };
 }
 
@@ -51,10 +50,6 @@ const Dashboard: React.FC = () => {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
 
   const { signOut, user } = useAuth();
-
-  const avatar = user.avatarURL
-    ? user.avatarURL.replace('localhost', '192.168.0.192')
-    : '';
 
   const handleDateChange = useCallback((day: Date, modifiers: DayModifiers) => {
     if (modifiers.available && !modifiers.disabled) {
@@ -92,16 +87,11 @@ const Dashboard: React.FC = () => {
       })
       .then(response => {
         const appointmentsFormatted = response.data.map(appointment => {
-          const userAvatar = appointment.user.avatarURL
-            ? appointment.user.avatarURL.replace('localhost', '192.168.0.192')
-            : '';
-
           return {
             ...appointment,
             user: {
               name: appointment.user.name,
               avatarURL: appointment.user.avatarURL,
-              formattedAvatar: userAvatar,
             },
             hourFormatted: format(parseISO(appointment.date), 'HH:mm'),
           };
@@ -160,7 +150,7 @@ const Dashboard: React.FC = () => {
           <img src={logoImg} alt="GoBarber" />
 
           <Profile>
-            <img src={avatar} alt={user.name} />
+            <img src={user.avatarURL} alt={user.name} />
 
             <div>
               <span>Bem-vindo,</span>
@@ -190,7 +180,7 @@ const Dashboard: React.FC = () => {
               <strong>Atendimento a seguir</strong>
               <div>
                 <img
-                  src={nextAppointment.user.formattedAvatar}
+                  src={nextAppointment.user.avatarURL}
                   alt={nextAppointment.user.name}
                 />
                 <strong>{nextAppointment.user.name}</strong>
@@ -217,7 +207,7 @@ const Dashboard: React.FC = () => {
                 </span>
                 <div>
                   <img
-                    src={appointment.user.formattedAvatar}
+                    src={appointment.user.avatarURL}
                     alt={appointment.user.name}
                   />
 
@@ -242,7 +232,7 @@ const Dashboard: React.FC = () => {
                 </span>
                 <div>
                   <img
-                    src={appointment.user.formattedAvatar}
+                    src={appointment.user.avatarURL}
                     alt={appointment.user.name}
                   />
 
