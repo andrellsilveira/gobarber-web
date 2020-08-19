@@ -22,6 +22,7 @@ import { Container, Error } from './styles';
  * */
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   name: string;
+  containerStyle?: object;
   /**
    * Define a propriedade "icon" indicando que ela é do tipo
    * "componente"
@@ -29,7 +30,7 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
    * da interface terá acesso a todas as propriedades de um
    * componente ícone nativo
    */
-  icon: React.ComponentType<IconBaseProps>;
+  icon?: React.ComponentType<IconBaseProps>;
 }
 
 /**
@@ -39,7 +40,12 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
  * letra em maiúsculo para que o React o entenda e possa utilizá-lo como componente
  * rest: As demais propriedades do elemento
  */
-const Input: React.FC<InputProps> = ({ name, icon: Icon, ...rest }) => {
+const Input: React.FC<InputProps> = ({
+  name,
+  containerStyle = {},
+  icon: Icon,
+  ...rest
+}) => {
   /**
    * Inicializa a referência do componente, caso um input do HTML
    */
@@ -106,7 +112,12 @@ const Input: React.FC<InputProps> = ({ name, icon: Icon, ...rest }) => {
   }, [fieldName, registerField]);
 
   return (
-    <Container isErrored={!!error} isFocused={isFocused} isFilled={isFilled}>
+    <Container
+      isErrored={!!error}
+      isFocused={isFocused}
+      isFilled={isFilled}
+      style={containerStyle}
+    >
       {
         /**
          * Só exibe o ícone se este for informado
